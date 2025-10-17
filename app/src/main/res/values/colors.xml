@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <!-- Primary Colors -->
+    <color name="primary_color">#6366F1</color>
+    <color name="primary_light">#A5B4FC</color>
+    <color name="primary_dark">#4338CA</color>
+
+    <!-- Background Gradient -->
+    <color name="gradient_start">#667eea</color>
+    <color name="gradient_end">#764ba2</color>
+
+    <!-- Surface Colors -->
+    <color name="surface_light">#FFFFFF</color>
+    <color name="surface_dark">#1E293B</color>
+
+    <!-- Text Colors -->
+    <color name="text_primary">#1E293B</color>
+    <color name="text_secondary">#64748B</color>
+    <color name="text_white">#FFFFFF</color>
+
+    <!-- Accent Colors -->
+    <color name="accent_green">#10B981</color>
+    <color name="accent_red">#EF4444</color>
+    <color name="accent_yellow">#F59E0B</color>
+    <color name="accent_purple">#8B5CF6</color>
+    <color name="gradient_start_login">#667eea</color>
+    <color name="gradient_middle_login">#764ba2</color>
+    <color name="gradient_end_login">#f093fb</color>
+    <!-- Add these to your existing colors.xml -->
+    <color name="accent_orange">#FF6B35</color>
+    <color name="gradient_extra_1">#4facfe</color>
+    <color name="gradient_extra_2">#00f2fe</color>
+</resources>

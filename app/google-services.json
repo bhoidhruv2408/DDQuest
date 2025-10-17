@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "518207393387",
+    "project_id": "ddcet-bfad6",
+    "storage_bucket": "ddcet-bfad6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:518207393387:android:3270446dbf58b4ab126b2e",
+        "android_client_info": {
+          "package_name": "com.example.ddquest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAdwQ5BVsgu01J5s4D-C6Ij7LoKoOyhUac"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:518207393387:android:ef886a645a31cf15126b2e",
+        "android_client_info": {
+          "package_name": "om.example.ddquest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAdwQ5BVsgu01J5s4D-C6Ij7LoKoOyhUac"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

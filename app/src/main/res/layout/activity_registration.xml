@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_background"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <!-- Back Button -->
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="10dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/back_button_desc"
+        android:src="@drawable/ic_arrow_back"
+        app:tint="@color/text_white" />
+
+    <!-- Main Card Container -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardRegister"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            app:cardBackgroundColor="@color/surface_light"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="25dp">
+
+                <!-- Header Section -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Create Account"
+                    android:textColor="@color/primary_color"
+                    android:textSize="26sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="25dp"
+                    android:gravity="center"
+                    android:text="Join DDQuest to start your DDCET preparation"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp" />
+
+                <!-- Name Field -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/nameLayout"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:hint="Full Name"
+                    app:boxStrokeColor="@color/primary_color"
+                    app:endIconDrawable="@drawable/ic_person"
+                    app:endIconMode="custom"
+                    app:endIconTint="@color/primary_color"
+                    app:hintTextColor="@color/primary_color"
+                    app:startIconTint="@color/primary_color">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etName"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        android:backgroundTint="@color/primary_color"
+                        android:inputType="textPersonName"
+                        android:maxLines="1"
+                        android:paddingStart="15dp"
+                        android:textColor="@color/text_primary"
+                        android:textSize="16sp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Email Field -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/emailLayout"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:hint="Email Address"
+                    app:boxStrokeColor="@color/primary_color"
+                    app:endIconDrawable="@drawable/ic_email"
+                    app:endIconMode="custom"
+                    app:endIconTint="@color/primary_color"
+                    app:hintTextColor="@color/primary_color"
+                    app:startIconTint="@color/primary_color">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        android:backgroundTint="@color/primary_color"
+                        android:inputType="textEmailAddress"
+                        android:maxLines="1"
+                        android:paddingStart="15dp"
+                        android:textColor="@color/text_primary"
+                        android:textSize="16sp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Semester Dropdown -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/semesterLayout"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:hint="Select Semester"
+                    app:boxStrokeColor="@color/primary_color"
+                    app:endIconTint="@color/primary_color"
+                    app:hintTextColor="@color/primary_color"
+                    app:startIconDrawable="@drawable/ic_school"
+                    app:startIconTint="@color/primary_color">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/actvSemester"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        android:backgroundTint="@color/primary_color"
+                        android:inputType="none"
+                        android:paddingStart="15dp"
+                        android:textColor="@color/text_primary"
+                        android:textSize="16sp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Branch Dropdown -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/branchLayout"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:hint="Select Branch"
+                    app:boxStrokeColor="@color/primary_color"
+                    app:endIconTint="@color/primary_color"
+                    app:hintTextColor="@color/primary_color"
+                    app:startIconDrawable="@drawable/ic_engineering"
+                    app:startIconTint="@color/primary_color">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/actvBranch"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        android:backgroundTint="@color/primary_color"
+                        android:inputType="none"
+                        android:paddingStart="15dp"
+                        android:textColor="@color/text_primary"
+                        android:textSize="16sp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Password Field -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/passwordLayout"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:hint="Password"
+                    app:boxStrokeColor="@color/primary_color"
+                    app:endIconMode="password_toggle"
+                    app:endIconTint="@color/primary_color"
+                    app:hintTextColor="@color/primary_color"
+                    app:startIconDrawable="@drawable/ic_password"
+                    app:startIconTint="@color/primary_color">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        android:backgroundTint="@color/primary_color"
+                        android:inputType="textPassword"
+                        android:maxLines="1"
+                        android:paddingStart="15dp"
+                        android:textColor="@color/text_primary"
+                        android:textSize="16sp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Terms Checkbox -->
+                <CheckBox
+                    android:id="@+id/cbTerms"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:buttonTint="@color/primary_color"
+                    android:text="I agree to Terms &amp; Conditions"
+                    android:textColor="@color/text_primary"
+                    android:textSize="14sp" />
+
+                <!-- Register Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnRegister"
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:backgroundTint="@color/primary_color"
+                    android:text="Create Account"
+                    android:textColor="@color/text_white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:cornerRadius="12dp"
+                    app:icon="@drawable/ic_rocket"
+                    app:iconGravity="textStart"
+                    app:iconPadding="8dp"
+                    app:iconTint="@color/text_white" />
+
+                <!-- Progress Bar -->
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:indeterminateTint="@color/primary_color"
+                    android:visibility="gone" />
+
+                <!-- Login Redirect -->
+                <TextView
+                    android:id="@+id/tvLoginRedirect"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:gravity="center"
+                    android:text="Already have an account? Login"
+                    android:textColor="@color/primary_color"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </ScrollView>
+
+</LinearLayout>
