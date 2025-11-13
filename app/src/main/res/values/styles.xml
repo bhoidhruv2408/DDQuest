@@ -1,8 +1,35 @@
-<!-- res/values/styles.xml -->
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- ==================== APP THEME ==================== -->
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/primary_color</item>
-        <item name="colorPrimaryVariant">@color/primary_color</item>
+        <item name="colorPrimaryVariant">@color/primary_dark</item>
         <item name="colorOnPrimary">@color/text_white</item>
+        <item name="colorSecondary">@color/primary_color</item>
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
     </style>
+
+    <!-- ==================== RADIO BUTTON STYLE ==================== -->
+    <style name="Widget.App.RadioButton" parent="Widget.MaterialComponents.CompoundButton.RadioButton">
+        <item name="buttonTint">?attr/colorPrimary</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <!-- ==================== SMALL BUTTON STYLE ==================== -->
+    <style name="Button.Small" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:height">36dp</item>
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="iconPadding">4dp</item>
+        <item name="iconGravity">textStart</item>
+        <item name="cornerRadius">18dp</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="strokeColor">@color/primary_color</item>
+        <item name="android:textColor">@color/primary_color</item>
+    </style>
+
 </resources>

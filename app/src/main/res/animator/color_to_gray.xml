@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objectAnimator xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="150"
+    android:propertyName="tint"
+    android:valueFrom="#FF6366F1"
+    android:valueTo="#FF757575"
+    android:valueType="colorType" />

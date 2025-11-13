@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/login_gradient_background"
-    android:orientation="vertical"
     android:padding="20dp">
 
     <!-- Back Button -->
@@ -12,24 +11,30 @@
         android:id="@+id/btnBack"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_marginBottom="10dp"
         android:background="@android:color/transparent"
         android:contentDescription="Back"
         android:src="@drawable/ic_arrow_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:tint="@color/text_white" />
 
-    <!-- Main Card Container -->
+    <!-- Scrollable Card Container -->
     <ScrollView
-        android:layout_width="match_parent"
+        android:id="@+id/scrollView"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        app:layout_constraintTop_toBottomOf="@id/btnBack"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
+            android:minHeight="600dp"
             app:cardBackgroundColor="@color/surface_light"
             app:cardCornerRadius="28dp"
             app:cardElevation="12dp">
@@ -40,7 +45,7 @@
                 android:orientation="vertical"
                 android:padding="30dp">
 
-                <!-- Header Section -->
+                <!-- Logo -->
                 <ImageView
                     android:layout_width="80dp"
                     android:layout_height="80dp"
@@ -50,6 +55,7 @@
                     android:src="@drawable/ic_ddquest_logo"
                     app:tint="@color/primary_color" />
 
+                <!-- Title -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -90,7 +96,6 @@
                         android:maxLines="1"
                         android:textColor="@color/text_primary"
                         android:textSize="16sp" />
-
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <!-- Password Field -->
@@ -116,7 +121,6 @@
                         android:maxLines="1"
                         android:textColor="@color/text_primary"
                         android:textSize="16sp" />
-
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <!-- Forgot Password -->
@@ -188,10 +192,9 @@
                         android:layout_weight="1"
                         android:alpha="0.3"
                         android:background="@color/text_secondary" />
-
                 </LinearLayout>
 
-                <!-- Google Sign In Button -->
+                <!-- Google Sign In -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnGoogleSignIn"
                     android:layout_width="match_parent"
@@ -206,7 +209,8 @@
                     app:iconPadding="8dp"
                     app:iconTint="@null"
                     app:strokeColor="@color/text_secondary"
-                    app:strokeWidth="1dp" />
+                    app:strokeWidth="1dp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
                 <!-- Register Redirect -->
                 <TextView
@@ -221,32 +225,33 @@
                     android:textStyle="bold" />
 
             </LinearLayout>
-
         </com.google.android.material.card.MaterialCardView>
-
     </ScrollView>
 
-    <!-- Floating Background Elements -->
+    <!-- Floating Background Element 1 -->
     <ImageView
         android:id="@+id/ivBgElement1"
         android:layout_width="120dp"
         android:layout_height="120dp"
-        android:layout_gravity="end"
         android:alpha="0.1"
         android:contentDescription="Background decoration"
         android:rotation="45"
         android:src="@drawable/ic_circle_pattern"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/scrollView"
         app:tint="@color/accent_purple" />
 
-    <!-- Added Floating Background Element 2 -->
+    <!-- Floating Background Element 2 -->
     <ImageView
         android:id="@+id/ivBgElement2"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_gravity="start|bottom"
         android:alpha="0.1"
         android:contentDescription="Background decoration 2"
         android:src="@drawable/ic_circle_pattern"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:tint="@color/primary_color" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

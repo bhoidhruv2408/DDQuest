@@ -1,35 +1,432 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- ==================== CORE & NEUTRAL COLORS ==================== -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <!-- Primary Colors -->
-    <color name="primary_color">#6366F1</color>
-    <color name="primary_light">#A5B4FC</color>
-    <color name="primary_dark">#4338CA</color>
+    <color name="transparent">#00000000</color>
 
-    <!-- Background Gradient -->
-    <color name="gradient_start">#667eea</color>
-    <color name="gradient_end">#764ba2</color>
+    <!-- Gray Scale -->
+    <color name="gray">#808080</color>
+    <color name="primary">#3F51B5</color>
+    <color name="gray_50">#FAFAFA</color>
+    <color name="gray_100">#F5F5F5</color>
+    <color name="gray_200">#EEEEEE</color>
+    <color name="gray_300">#E0E0E0</color>
+    <color name="gray_400">#BDBDBD</color>
+    <color name="gray_500">#9E9E9E</color>
+    <color name="gray_600">#757575</color>
+    <color name="gray_700">#616161</color>
+    <color name="gray_800">#424242</color>
+    <color name="gray_900">#212121</color>
 
-    <!-- Surface Colors -->
-    <color name="surface_light">#FFFFFF</color>
-    <color name="surface_dark">#1E293B</color>
+    <!-- ==================== PRIMARY COLOR SCHEME ==================== -->
+    <color name="primary_color">#6366F1</color>      <!-- Indigo 500 -->
+    <color name="primary_light">#A5B4FC</color>     <!-- Indigo 300 -->
+    <color name="primary_dark">#4338CA</color>      <!-- Indigo 700 -->
+    <color name="primary_super_light">#EEF2FF</color> <!-- Indigo 50 -->
 
-    <!-- Text Colors -->
-    <color name="text_primary">#1E293B</color>
-    <color name="text_secondary">#64748B</color>
-    <color name="text_white">#FFFFFF</color>
+    <!-- Primary Variants -->
+    <color name="primary_50">#EEF2FF</color>
+    <color name="primary_100">#E0E7FF</color>
+    <color name="primary_200">#C7D2FE</color>
+    <color name="primary_300">#A5B4FC</color>
+    <color name="primary_400">#818CF8</color>
+    <color name="primary_500">#6366F1</color>
+    <color name="primary_600">#4F46E5</color>
+    <color name="primary_700">#4338CA</color>
+    <color name="primary_800">#3730A3</color>
+    <color name="primary_900">#312E81</color>
 
-    <!-- Accent Colors -->
-    <color name="accent_green">#10B981</color>
-    <color name="accent_red">#EF4444</color>
-    <color name="accent_yellow">#F59E0B</color>
-    <color name="accent_purple">#8B5CF6</color>
+    <!-- ==================== GREEN COLOR SCHEME ==================== -->
+    <!-- Basic Green Colors -->
+    <color name="green">#10B981</color>                 <!-- Emerald 500 - Main green -->
+    <color name="green_50">#ECFDF5</color>             <!-- Emerald 50 -->
+    <color name="green_100">#D1FAE5</color>            <!-- Emerald 100 -->
+    <color name="green_200">#A7F3D0</color>            <!-- Emerald 200 -->
+    <color name="green_300">#6EE7B7</color>            <!-- Emerald 300 -->
+    <color name="green_400">#34D399</color>            <!-- Emerald 400 -->
+    <color name="green_500">#10B981</color>            <!-- Emerald 500 -->
+    <color name="green_600">#059669</color>            <!-- Emerald 600 -->
+    <color name="green_700">#047857</color>            <!-- Emerald 700 -->
+    <color name="green_800">#065F46</color>            <!-- Emerald 800 -->
+    <color name="green_900">#064E3B</color>            <!-- Emerald 900 -->
+
+    <!-- Semantic Green Colors -->
+    <color name="success_green">#10B981</color>        <!-- Success states -->
+    <color name="success_light">#D1FAE5</color>        <!-- Success background -->
+    <color name="success_dark">#047857</color>         <!-- Success dark -->
+
+    <!-- Chart & Data Greens -->
+
+    <color name="chart_green_light">#34D399</color>
+    <color name="chart_green_dark">#059669</color>
+
+    <!-- Status Greens -->
+    <color name="status_success">#10B981</color>
+
+    <color name="status_available">#10B981</color>
+
+    <!-- Icon & UI Greens -->
+    <color name="icon_green">#10B981</color>
+
+    <color name="badge_green">#10B981</color>
+    <color name="text_success">#065F46</color>
+
+    <!-- Progress & Indicator Greens -->
+
+    <color name="indicator_green">#10B981</color>
+
+    <!-- Button & Action Greens -->
+    <color name="button_success">#10B981</color>
+    <color name="button_success_light">#D1FAE5</color>
+    <color name="button_success_dark">#047857</color>
+
+    <!-- ==================== GRADIENT COLORS ==================== -->
+    <!-- Header Gradient -->
+    <color name="gradient_start">#667eea</color>    <!-- Purple -->
+    <color name="gradient_end">#764ba2</color>      <!-- Purple Dark -->
+    <color name="gradient_header_parallax_start">#667eea</color>
+    <color name="gradient_header_parallax_end">#764ba2</color>
+
+    <!-- Login Gradient -->
     <color name="gradient_start_login">#667eea</color>
     <color name="gradient_middle_login">#764ba2</color>
     <color name="gradient_end_login">#f093fb</color>
-    <!-- Add these to your existing colors.xml -->
-    <color name="accent_orange">#FF6B35</color>
-    <color name="gradient_extra_1">#4facfe</color>
-    <color name="gradient_extra_2">#00f2fe</color>
+
+    <!-- Card & Icon Gradients -->
+    <color name="gradient_blue_start">#4facfe</color>
+    <color name="gradient_blue_end">#00f2fe</color>
+    <color name="gradient_purple_start">#a18cd1</color>
+    <color name="gradient_purple_end">#fbc2eb</color>
+    <color name="gradient_orange_start">#ff9a9e</color>
+    <color name="gradient_orange_end">#fecfef</color>
+    <color name="gradient_green_start">#a1c4fd</color>
+    <color name="gradient_green_end">#c2e9fb</color>
+
+    <!-- Premium Gradients -->
+    <color name="gradient_premium_start">#667eea</color>
+    <color name="gradient_premium_mid">#764ba2</color>
+    <color name="gradient_premium_end">#f093fb</color>
+    <color name="gradient_indigo_start">#6366F1</color>
+    <color name="gradient_indigo_end">#8B5CF6</color>
+    <color name="gradient_emerald_start">#10B981</color>
+    <color name="gradient_emerald_end">#34D399</color>
+
+    <!-- ==================== SURFACE & BACKGROUND COLORS ==================== -->
+    <color name="surface_light">#FFFFFF</color>
+    <color name="surface_dark">#1E293B</color>
+    <color name="background_gray">#F8F9FA</color>
+    <color name="background_light">#FAFBFC</color>
+
+    <!-- Surface Elevation -->
+    <color name="surface_1">#FFFFFF</color>
+    <color name="surface_2">#F8FAFC</color>
+    <color name="surface_3">#F1F5F9</color>
+    <color name="surface_4">#E2E8F0</color>
+
+    <!-- ==================== TEXT COLORS ==================== -->
+    <color name="text_primary">#1E293B</color>      <!-- Slate 900 -->
+    <color name="text_secondary">#64748B</color>    <!-- Slate 500 -->
+    <color name="text_tertiary">#94A3B8</color>     <!-- Slate 400 -->
+    <color name="text_disabled">#CBD5E1</color>     <!-- Slate 300 -->
+    <color name="text_white">#FFFFFF</color>
+    <color name="text_black">#000000</color>
+
+    <!-- ==================== ACCENT & STATUS COLORS ==================== -->
+    <!-- Success Colors -->
+    <color name="accent_green">#10B981</color>      <!-- Emerald 500 -->
+    <color name="green_light">#D1FAE5</color>       <!-- Emerald 100 -->
+    <color name="green_dark">#047857</color>         <!-- Emerald 700 -->
+
+    <!-- Error Colors -->
+    <color name="accent_red">#EF4444</color>        <!-- Red 500 -->
+    <color name="red_light">#FEE2E2</color>         <!-- Red 100 -->
+    <color name="red_dark">#DC2626</color>          <!-- Red 700 -->
+
+    <!-- Warning Colors -->
+    <color name="accent_yellow">#F59E0B</color>     <!-- Amber 500 -->
+    <color name="yellow_light">#FEF3C7</color>      <!-- Amber 100 -->
+    <color name="yellow_dark">#D97706</color>       <!-- Amber 700 -->
+
+    <!-- Info Colors -->
+    <color name="accent_blue">#3B82F6</color>       <!-- Blue 500 -->
+    <color name="blue_light">#DBEAFE</color>        <!-- Blue 100 -->
+    <color name="blue_dark">#1D4ED8</color>         <!-- Blue 700 -->
+
+    <!-- Purple Accents -->
+    <color name="accent_purple">#8B5CF6</color>     <!-- Violet 500 -->
+    <color name="purple_light">#EDE9FE</color>      <!-- Violet 100 -->
+    <color name="purple_dark">#7C3AED</color>       <!-- Violet 700 -->
+
+    <!-- Orange Accents -->
+    <color name="accent_orange">#FF6B35</color>     <!-- Orange 500 -->
+    <color name="orange_light">#FFEDD5</color>      <!-- Orange 100 -->
+    <color name="orange_dark">#EA580C</color>       <!-- Orange 700 -->
+
+    <!-- ==================== CARD BACKGROUNDS ==================== -->
+    <color name="daily_practice_card">#E3F2FD</color>   <!-- Blue 50 -->
+    <color name="mock_test_card">#F3E5F5</color>       <!-- Purple 100 -->
+    <color name="subject_rotation_card">#E8F5E8</color> <!-- Green 100 -->
+    <color name="analytics_card">#FFF3E0</color>       <!-- Orange 100 -->
+
+    <!-- Additional Card Colors -->
+    <color name="card_physics">#FFEBEE</color>       <!-- Red 50 -->
+    <color name="card_math">#E3F2FD</color>         <!-- Blue 50 -->
+    <color name="card_chemistry">#E8F5E8</color>    <!-- Green 50 -->
+    <color name="card_english">#FFF3E0</color>      <!-- Orange 50 -->
+    <color name="card_aptitude">#F3E5F5</color>     <!-- Purple 50 -->
+
+    <!-- Card States -->
+    <color name="card_hover">#F8FAFC</color>
+    <color name="card_selected">#EEF2FF</color>
+    <color name="card_disabled">#F1F5F9</color>
+
+    <!-- ==================== ICON & PROGRESS COLORS ==================== -->
+    <color name="streak_orange">#FF6B35</color>
+    <color name="completion_gold">#FFB800</color>
+    <color name="progress_blue">#2196F3</color>        <!-- Blue 500 -->
+    <color name="progress_green">#10B981</color>       <!-- Green 500 -->
+    <color name="progress_orange">#F59E0B</color>      <!-- Yellow 500 -->
+    <color name="progress_track">#E0E0E0</color>       <!-- Gray 300 -->
+    <color name="progress_track_light">#F1F5F9</color> <!-- Slate 100 -->
+
+    <!-- Progress Variants -->
+    <color name="progress_success">#10B981</color>
+    <color name="progress_warning">#F59E0B</color>
+    <color name="progress_error">#EF4444</color>
+    <color name="progress_info">#3B82F6</color>
+
+    <!-- ==================== NAVIGATION & INTERACTION COLORS ==================== -->
+    <!-- Bottom Navigation -->
+    <color name="bottom_nav_selected">#6366F1</color>
+    <color name="bottom_nav_unselected">#64748B</color>
+    <color name="bottom_nav_background">#FFFFFF</color>
+
+    <!-- Tab Colors -->
+    <color name="tab_selected">#6366F1</color>
+    <color name="tab_unselected">#64748B</color>
+    <color name="tab_indicator">#6366F1</color>
+
+    <!-- Ripple & Selection -->
+    <color name="ripple_color">#1F6366F1</color>      <!-- Primary with 12% opacity -->
+    <color name="divider_color">#E2E8F0</color>       <!-- Slate 200 -->
+    <color name="divider_gray">#FFDADADA</color>
+
+    <!-- Border Colors -->
+    <color name="border_light">#F1F5F9</color>
+    <color name="border_medium">#E2E8F0</color>
+    <color name="border_dark">#CBD5E1</color>
+    <color name="border_primary">#6366F1</color>
+    <color name="border_success">#10B981</color>
+    <color name="border_error">#EF4444</color>
+
+    <!-- ==================== BADGE & CHIP COLORS ==================== -->
+    <color name="chip_live">#EF4444</color>
+    <color name="badge_purple">#8B5CF6</color>
+    <color name="badge_red">#EF4444</color>
+
+    <color name="badge_blue">#3B82F6</color>
+    <color name="badge_orange">#F59E0B</color>
+
+    <!-- Badge Backgrounds -->
+    <color name="badge_red_bg">#FEE2E2</color>
+    <color name="badge_green_bg">#D1FAE5</color>
+    <color name="badge_blue_bg">#DBEAFE</color>
+    <color name="badge_orange_bg">#FEF3C7</color>
+    <color name="badge_purple_bg">#EDE9FE</color>
+
+    <!-- Enhanced Badges -->
+    <color name="badge_purple_enhanced_bg">#8B5CF6</color>
+    <color name="badge_primary_enhanced_bg">#6366F1</color>
+    <color name="date_badge_bg">#E3F2FD</color>
+
+    <!-- ==================== SHADOW & ELEVATION COLORS ==================== -->
+    <color name="shadow_light">#1A000000</color>      <!-- Black with 10% opacity -->
+    <color name="shadow_medium">#33000000</color>     <!-- Black with 20% opacity -->
+    <color name="shadow_dark">#4D000000</color>       <!-- Black with 30% opacity -->
+
+    <!-- ==================== SPECIFIC COMPONENT COLORS ==================== -->
+    <!-- Search Bar -->
+    <color name="search_bar_background">#FFFFFF</color>
+    <color name="search_bar_stroke">#E2E8F0</color>
+
+    <!-- Floating Action Button -->
+    <color name="fab_background">#6366F1</color>
+    <color name="fab_icon_tint">#FFFFFF</color>
+
+    <!-- Button States -->
+    <color name="button_disabled">#9CA3AF</color>
+    <color name="button_disabled_bg">#F3F4F6</color>
+
+    <!-- Input Fields -->
+    <color name="input_background">#FFFFFF</color>
+    <color name="input_border">#E2E8F0</color>
+    <color name="input_focus_border">#6366F1</color>
+    <color name="input_error_border">#EF4444</color>
+    <color name="input_success_border">#10B981</color>
+    <color name="input_disabled_bg">#F8FAFC</color>
+
+    <!-- ==================== SUBJECT SPECIFIC COLORS ==================== -->
+    <color name="subject_physics">#EF4444</color>     <!-- Red -->
+    <color name="subject_math">#3B82F6</color>       <!-- Blue -->
+    <color name="subject_chemistry">#10B981</color>  <!-- Green -->
+    <color name="subject_english">#F59E0B</color>    <!-- Yellow -->
+    <color name="subject_biology">#8B5CF6</color>    <!-- Purple -->
+    <color name="subject_aptitude">#EC4899</color>   <!-- Pink -->
+
+    <!-- Subject Backgrounds -->
+    <color name="subject_physics_bg">#FEF2F2</color>
+    <color name="subject_math_bg">#EFF6FF</color>
+    <color name="subject_chemistry_bg">#F0FDF4</color>
+    <color name="subject_english_bg">#FEFCE8</color>
+    <color name="subject_biology_bg">#FAF5FF</color>
+    <color name="subject_aptitude_bg">#FDF2F8</color>
+
+    <!-- ==================== ACHIEVEMENT & TOAST COLORS ==================== -->
+    <!-- Achievement Levels -->
+    <color name="achievement_bronze">#CD7F32</color>
+    <color name="achievement_silver">#C0C0C0</color>
+    <color name="achievement_gold">#FFD700</color>
+    <color name="achievement_platinum">#E5E4E2</color>
+    <color name="achievement_diamond">#B9F2FF</color>
+
+    <!-- Toast & Snackbar -->
+    <color name="toast_success_bg">#10B981</color>
+    <color name="toast_error_bg">#EF4444</color>
+    <color name="toast_warning_bg">#F59E0B</color>
+    <color name="toast_info_bg">#3B82F6</color>
+    <color name="toast_text">#FFFFFF</color>
+
+    <!-- ==================== STATE & INTERACTION COLORS ==================== -->
+    <!-- State Colors -->
+    <color name="state_hover_primary">#4F46E5</color>
+    <color name="state_hover_success">#059669</color>
+    <color name="state_hover_error">#DC2626</color>
+    <color name="state_hover_warning">#D97706</color>
+
+    <color name="state_focus_primary">#6366F1</color>
+    <color name="state_focus_ring">#3B82F6</color>
+
+    <color name="state_active_primary">#4338CA</color>
+    <color name="state_active_success">#047857</color>
+
+    <!-- Pressed States -->
+    <color name="pressed_primary">#3730A3</color>
+    <color name="pressed_success">#047857</color>
+    <color name="pressed_error">#B91C1C</color>
+
+    <!-- Disabled States -->
+    <color name="disabled_bg">#F1F5F9</color>
+    <color name="disabled_text">#94A3B8</color>
+    <color name="disabled_icon">#CBD5E1</color>
+    <color name="disabled_border">#E2E8F0</color>
+
+    <!-- ==================== ICON & ASSET COLORS ==================== -->
+    <!-- Icon Tints -->
+    <color name="icon_primary">#64748B</color>
+    <color name="icon_secondary">#94A3B8</color>
+    <color name="icon_tertiary">#CBD5E1</color>
+    <color name="icon_active">#6366F1</color>
+    <color name="icon_success">#10B981</color>
+    <color name="icon_warning">#F59E0B</color>
+    <color name="icon_error">#EF4444</color>
+    <color name="icon_white">#FFFFFF</color>
+
+    <!-- Asset Backgrounds -->
+    <color name="asset_bg_blue">#EFF6FF</color>
+    <color name="asset_bg_green">#F0FDF4</color>
+    <color name="asset_bg_yellow">#FEFCE8</color>
+    <color name="asset_bg_red">#FEF2F2</color>
+    <color name="asset_bg_purple">#FAF5FF</color>
+    <color name="asset_bg_indigo">#EEF2FF</color>
+
+    <!-- ==================== ANIMATION & OVERLAY COLORS ==================== -->
+    <!-- Overlay Colors -->
+    <color name="overlay_light">#1AFFFFFF</color>
+    <color name="overlay_dark">#801E293B</color>
+    <color name="overlay_primary">#1A6366F1</color>
+
+    <!-- Loading & Skeleton -->
+    <color name="skeleton_base">#F1F5F9</color>
+    <color name="skeleton_highlight">#FFFFFF</color>
+    <color name="loading_overlay">#801E293B</color>
+
+    <!-- ==================== CHART & DATA VISUALIZATION COLORS ==================== -->
+    <!-- Chart Colors -->
+    <color name="chart_blue">#3B82F6</color>
+    <color name="chart_green">#10B981</color>
+    <color name="chart_yellow">#F59E0B</color>
+    <color name="chart_red">#EF4444</color>
+    <color name="chart_purple">#8B5CF6</color>
+    <color name="chart_pink">#EC4899</color>
+    <color name="chart_indigo">#6366F1</color>
+    <color name="chart_teal">#14B8A6</color>
+
+    <!-- ==================== STATUS INDICATORS ==================== -->
+    <!-- Online Status -->
+    <color name="status_online">#10B981</color>
+    <color name="status_offline">#94A3B8</color>
+    <color name="status_away">#F59E0B</color>
+    <color name="status_busy">#EF4444</color>
+
+    <!-- Verification Badges -->
+    <color name="verified_badge">#10B981</color>
+    <color name="premium_badge">#F59E0B</color>
+    <color name="admin_badge">#EF4444</color>
+    <color name="moderator_badge">#3B82F6</color>
+
+    <!-- ==================== BRAND SPECIFIC COLORS ==================== -->
+    <!-- DDQuest Brand Colors -->
+    <color name="brand_primary">#6366F1</color>
+    <color name="brand_secondary">#10B981</color>
+    <color name="brand_accent">#F59E0B</color>
+    <color name="brand_neutral">#64748B</color>
+
+    <!-- ==================== ACCESSIBILITY COLORS ==================== -->
+    <!-- High Contrast -->
+    <color name="hc_primary">#000000</color>
+    <color name="hc_secondary">#333333</color>
+    <color name="hc_background">#FFFFFF</color>
+    <color name="hc_surface">#F5F5F5</color>
+
+    <!-- Focus Indicators -->
+    <color name="focus_indicator">#3B82F6</color>
+    <color name="focus_ring">#1D4ED8</color>
+
+    <!-- ==================== SWITCH & TOGGLE COLORS ==================== -->
+    <color name="switch_track">#E0E0E0</color>
+    <color name="switch_thumb">#FFFFFF</color>
+    <color name="switch_track_checked">#A5B4FC</color>
+
+    <!-- ==================== SEMANTIC COLORS ==================== -->
+    <!-- Semantic Backgrounds -->
+    <color name="semantic_info_bg">#DBEAFE</color>
+    <color name="semantic_success_bg">#D1FAE5</color>
+    <color name="semantic_warning_bg">#FEF3C7</color>
+    <color name="semantic_error_bg">#FEE2E2</color>
+
+    <!-- Semantic Text -->
+    <color name="semantic_info_text">#1E40AF</color>
+    <color name="semantic_success_text">#065F46</color>
+    <color name="semantic_warning_text">#92400E</color>
+    <color name="semantic_error_text">#991B1B</color>
+
+    <!-- ==================== UTILITY COLORS ==================== -->
+    <!-- Opacity Scales -->
+    <color name="opacity_5">#0D000000</color>
+    <color name="opacity_10">#1A000000</color>
+    <color name="opacity_20">#33000000</color>
+    <color name="opacity_30">#4D000000</color>
+    <color name="opacity_40">#66000000</color>
+    <color name="opacity_50">#80000000</color>
+
+    <!-- White Opacity Scales -->
+    <color name="white_opacity_5">#0DFFFFFF</color>
+    <color name="white_opacity_10">#1AFFFFFF</color>
+    <color name="white_opacity_20">#33FFFFFF</color>
+    <color name="white_opacity_30">#4DFFFFFF</color>
+    <color name="white_opacity_40">#66FFFFFF</color>
+    <color name="white_opacity_50">#80FFFFFF</color>
+
 </resources>

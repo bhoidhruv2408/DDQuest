@@ -18,11 +18,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 public class LoginActivity extends AppCompatActivity {
@@ -33,19 +35,36 @@ public class LoginActivity extends AppCompatActivity {
     private ImageButton btnBack;
     private TextView tvForgotPassword, tvRegisterRedirect;
     private ProgressBar progressBar;
+
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
-    private ActivityResultLauncher<Intent> googleSignInLauncher;
+
+    private final ActivityResultLauncher<Intent> googleSignInLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                    result -> {
+                        if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                            Task<GoogleSignInAccount> task =
+                                    GoogleSignIn.getSignedInAccountFromIntent(result.getData());
+                            handleGoogleSignInResult(task);
+                        } else {
+                            showProgress(false);
+                            toast("Google Sign-In canceled");
+                        }
+                    });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
+        initViews();
+        setupGoogleSignIn();          // <-- now uses correct web-client-id
+        setupClickListeners();
+        checkCurrentUser();
+    }
 
-        // Initialize views
+    private void initViews() {
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         emailLayout = findViewById(R.id.emailLayout);
@@ -56,140 +75,186 @@ public class LoginActivity extends AppCompatActivity {
         tvForgotPassword = findViewById(R.id.tvForgotPassword);
         tvRegisterRedirect = findViewById(R.id.tvRegisterRedirect);
         progressBar = findViewById(R.id.progressBar);
+    }
 
-        // Configure Google Sign-In
+    /***  IMPORTANT – uses the web client id from strings.xml  ***/
+    private void setupGoogleSignIn() {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.gcm_defaultSenderId))
+                .requestIdToken(getString(R.string.default_web_client_id))   // <-- FIXED
                 .requestEmail()
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+    }
 
-        // Initialize Activity Result Launcher for Google Sign-In
-        googleSignInLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == RESULT_OK) {
-                        Intent data = result.getData();
-                        try {
-                            GoogleSignInAccount account = GoogleSignIn.getSignedInAccountFromIntent(data).getResult(ApiException.class);
-                            firebaseAuthWithGoogle(account.getIdToken());
-                        } catch (ApiException e) {
-                            Toast.makeText(LoginActivity.this, "Google Sign-In failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                            progressBar.setVisibility(View.GONE);
-                            btnGoogleSignIn.setEnabled(true);
-                        }
-                    } else {
-                        progressBar.setVisibility(View.GONE);
-                        btnGoogleSignIn.setEnabled(true);
-                    }
-                });
-
-        // Back button click listener
+    private void setupClickListeners() {
         btnBack.setOnClickListener(v -> finish());
 
-        // Register redirect click listener
+        btnLogin.setOnClickListener(v -> loginWithEmail());
+
+        btnGoogleSignIn.setOnClickListener(v -> signInWithGoogle());
+
         tvRegisterRedirect.setOnClickListener(v -> {
-            Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-            startActivity(intent);
+            startActivity(new Intent(this, RegisterActivity.class));
             finish();
         });
 
-        // Forgot password click listener
         tvForgotPassword.setOnClickListener(v -> {
-            String email = etEmail.getText().toString().trim();
+            String email = getText(etEmail).trim();
             if (TextUtils.isEmpty(email)) {
-                emailLayout.setError("Please enter your email");
+                emailLayout.setError("Enter your email");
                 return;
             }
-            progressBar.setVisibility(View.VISIBLE);
-            mAuth.sendPasswordResetEmail(email)
-                    .addOnCompleteListener(task -> {
-                        progressBar.setVisibility(View.GONE);
-                        if (task.isSuccessful()) {
-                            Toast.makeText(LoginActivity.this, "Password reset email sent", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(LoginActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                        }
-                    });
-        });
-
-        // Login button click listener
-        btnLogin.setOnClickListener(v -> loginUser());
-
-        // Google Sign-In button click listener
-        btnGoogleSignIn.setOnClickListener(v -> {
-            progressBar.setVisibility(View.VISIBLE);
-            btnGoogleSignIn.setEnabled(false);
-            Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-            googleSignInLauncher.launch(signInIntent);
+            resetPassword(email);
         });
     }
 
-    private void loginUser() {
-        // Reset errors
-        emailLayout.setError(null);
-        passwordLayout.setError(null);
-
-        // Get input values
-        String email = etEmail.getText().toString().trim();
-        String password = etPassword.getText().toString().trim();
-
-        // Validate inputs
-        boolean isValid = true;
-
-        if (TextUtils.isEmpty(email)) {
-            emailLayout.setError("Please enter your email");
-            isValid = false;
-        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            emailLayout.setError("Please enter a valid email");
-            isValid = false;
+    private void checkCurrentUser() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null && user.isEmailVerified()) {
+            navigateToHome();
         }
+    }
 
-        if (TextUtils.isEmpty(password)) {
-            passwordLayout.setError("Please enter your password");
-            isValid = false;
-        }
+    private void loginWithEmail() {
+        resetErrors();
+        String email = getText(etEmail).trim();
+        String password = getText(etPassword).trim();
 
-        if (!isValid) {
-            return;
-        }
+        if (!validateInputs(email, password)) return;
 
-        // Show progress bar
-        progressBar.setVisibility(View.VISIBLE);
-        btnLogin.setEnabled(false);
-
-        // Sign in with Firebase
+        showProgress(true);
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
-                    progressBar.setVisibility(View.GONE);
-                    btnLogin.setEnabled(true);
-
+                    showProgress(false);
                     if (task.isSuccessful()) {
-                        Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        startActivity(intent);
-                        finish();
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        if (user != null) {
+                            if (user.isEmailVerified()) {
+                                toast("Login successful!");
+                                navigateToHome();
+                            } else {
+                                // *** SEND VERIFICATION EMAIL HERE ***
+                                sendVerificationEmail(user);
+                            }
+                        }
                     } else {
-                        Toast.makeText(LoginActivity.this, "Login failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                        String msg = task.getException() != null
+                                ? task.getException().getMessage()
+                                : "Login failed";
+                        toast(msg);
                     }
                 });
+    }
+
+    /***  NEW METHOD – sends verification mail + shows nice toast  ***/
+    private void sendVerificationEmail(FirebaseUser user) {
+        user.sendEmailVerification()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        toast("Verification email sent! Check your inbox (and spam).");
+                    } else {
+                        toast("Failed to send verification email.");
+                    }
+                    mAuth.signOut();   // force user to verify before login
+                });
+    }
+
+    private void signInWithGoogle() {
+        showProgress(true);
+        Intent intent = mGoogleSignInClient.getSignInIntent();
+        googleSignInLauncher.launch(intent);
+    }
+
+    private void handleGoogleSignInResult(Task<GoogleSignInAccount> task) {
+        try {
+            GoogleSignInAccount account = task.getResult(ApiException.class);
+            if (account != null) {
+                firebaseAuthWithGoogle(account.getIdToken());
+            }
+        } catch (ApiException e) {
+            showProgress(false);
+            toast("Google Sign-In failed: " + e.getMessage());
+        }
     }
 
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
-                    progressBar.setVisibility(View.GONE);
-                    btnGoogleSignIn.setEnabled(true);
-
+                    showProgress(false);
                     if (task.isSuccessful()) {
-                        Toast.makeText(LoginActivity.this, "Google Sign-In successful!", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        startActivity(intent);
-                        finish();
+                        toast("Google Sign-In successful!");
+                        navigateToHome();
                     } else {
-                        Toast.makeText(LoginActivity.this, "Google Sign-In failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                        toast("Authentication failed");
                     }
                 });
+    }
+
+    private void resetPassword(String email) {
+        showProgress(true);
+        mAuth.sendPasswordResetEmail(email)
+                .addOnCompleteListener(task -> {
+                    showProgress(false);
+                    if (task.isSuccessful()) {
+                        toast("Password reset email sent!");
+                    } else {
+                        toast("Failed to send reset email");
+                    }
+                });
+    }
+
+    private boolean validateInputs(String email, String password) {
+        boolean valid = true;
+
+        if (TextUtils.isEmpty(email)) {
+            emailLayout.setError("Enter email");
+            valid = false;
+        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailLayout.setError("Invalid email");
+            valid = false;
+        }
+
+        if (TextUtils.isEmpty(password)) {
+            passwordLayout.setError("Enter password");
+            valid = false;
+        } else if (password.length() < 6) {
+            passwordLayout.setError("Min 6 characters");
+            valid = false;
+        }
+
+        return valid;
+    }
+
+    private void resetErrors() {
+        emailLayout.setError(null);
+        passwordLayout.setError(null);
+    }
+
+    private void showProgress(boolean show) {
+        progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+        btnLogin.setEnabled(!show);
+        btnGoogleSignIn.setEnabled(!show);
+    }
+
+    private void navigateToHome() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+    private String getText(TextInputEditText editText) {
+        return editText.getText() != null ? editText.getText().toString() : "";
+    }
+
+    private void toast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        checkCurrentUser();
     }
 }

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/ic_chevron_right">
+
+    <target
+        android:name="chevron"
+        android:animation="@animator/translate_right" />
+
+    <target
+        android:name="chevron"
+        android:animation="@animator/color_to_primary" />
+</animated-vector>

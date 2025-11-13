@@ -37,6 +37,7 @@ android {
     }
 }
 
+
 dependencies {
     // Android core libraries
     implementation(libs.appcompat)
@@ -48,6 +49,10 @@ dependencies {
     implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
+    implementation ("de.hdodenhof:circleimageview:3.1.0")
+    implementation ("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
 
     // Testing
     testImplementation(libs.junit)
@@ -61,6 +66,9 @@ dependencies {
     implementation("com.google.firebase:firebase-auth:23.0.0")
     implementation("com.google.firebase:firebase-firestore:24.9.1")
     implementation("com.google.android.gms:play-services-auth:21.2.0")
+    implementation("com.airbnb.android:lottie:6.1.0")
+
+
 
 // (optional for authentication)
 }
