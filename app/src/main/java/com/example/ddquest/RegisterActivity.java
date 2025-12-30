@@ -3,6 +3,7 @@ package com.example.ddquest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -21,6 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,32 +37,31 @@ public class RegisterActivity extends AppCompatActivity {
     private ImageButton btnBack;
     private TextView tvLoginRedirect;
     private ProgressBar progressBar;
+
     private FirebaseAuth mAuth;
-    private DatabaseReference mDatabase;
+    private FirebaseFirestore db;
+    private DatabaseReference rtdb;
+
+    private static final String ADMIN_EMAIL_1 = "bhoidhruv24@gmail.com";
+    private static final String ADMIN_EMAIL_2 = "dhobived252@gmail.com";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
 
-        // Initialize Firebase
         mAuth = FirebaseAuth.getInstance();
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        db = FirebaseFirestore.getInstance();
+        rtdb = FirebaseDatabase.getInstance().getReference();
 
-        // Initialize views
         initViews();
-
-        // Setup dropdowns
         setupDropdowns();
 
-        // Click listeners
         btnBack.setOnClickListener(v -> finish());
-
         tvLoginRedirect.setOnClickListener(v -> {
-            startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+            startActivity(new Intent(this, LoginActivity.class));
             finish();
         });
-
         btnRegister.setOnClickListener(v -> registerUser());
     }
 
@@ -83,78 +84,166 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void setupDropdowns() {
-        // Semester
         String[] semesters = {"1st Semester", "2nd Semester", "3rd Semester", "4th Semester",
                 "5th Semester", "6th Semester", "7th Semester", "8th Semester"};
-        ArrayAdapter<String> semesterAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_dropdown_item_1line, semesters);
-        actvSemester.setAdapter(semesterAdapter);
+        actvSemester.setAdapter(new ArrayAdapter<>(this,
+                android.R.layout.simple_dropdown_item_1line, semesters));
 
-        // Branch
         String[] branches = {
-                // Computer
                 "Computer Engineering", "Information Technology", "Computer Science & Engineering",
                 "Artificial Intelligence & Data Science", "Artificial Intelligence & Machine Learning",
-
-                // Core
                 "Civil Engineering", "Mechanical Engineering", "Electrical Engineering",
                 "Electronics & Communication Engineering", "Electrical & Electronics Engineering",
                 "Instrumentation & Control Engineering", "Chemical Engineering",
                 "Automobile Engineering", "Production Engineering",
-
-                // Other
                 "Biomedical Engineering", "Environmental Engineering", "Mechatronics Engineering",
                 "Robotics & Automation",
-
-                // Diploma
                 "Diploma in Computer Engineering", "Diploma in Civil Engineering",
                 "Diploma in Mechanical Engineering", "Diploma in Electrical Engineering",
                 "Diploma in Electronics & Communication", "Diploma in Information Technology",
                 "Diploma in Chemical Engineering", "Diploma in Automobile Engineering",
-
                 "Other"
         };
-
-        ArrayAdapter<String> branchAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_dropdown_item_1line, branches);
-        actvBranch.setAdapter(branchAdapter);
+        actvBranch.setAdapter(new ArrayAdapter<>(this,
+                android.R.layout.simple_dropdown_item_1line, branches));
     }
 
     private void registerUser() {
-        // Prevent double click
-        if ("Registering...".equals(btnRegister.getText().toString())) {
-            return;
-        }
+        if ("Registering...".equals(btnRegister.getText().toString())) return;
 
-        // Reset errors
         clearErrors();
-
         String name = getTrimmedText(etName);
         String email = getTrimmedText(etEmail);
         String password = etPassword.getText().toString();
         String semester = getTrimmedText(actvSemester);
         String branch = getTrimmedText(actvBranch);
 
-        if (!validateInputs(name, email, password, semester, branch)) {
-            return;
+        // FINAL variables for lambdas
+        final String finalSemester = isAdminEmail(email) ? "Admin" : semester;
+        final String finalBranch = isAdminEmail(email) ? "Admin" : branch;
+
+        // Hide fields for admin
+        if (isAdminEmail(email)) {
+            semesterLayout.setVisibility(View.GONE);
+            branchLayout.setVisibility(View.GONE);
+        } else {
+            semesterLayout.setVisibility(View.VISIBLE);
+            branchLayout.setVisibility(View.VISIBLE);
         }
 
-        // Show loading
+        if (!validateInputs(name, email, password, finalSemester, finalBranch, isAdminEmail(email))) return;
+
         showLoading(true);
 
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener(authResult -> {
                     FirebaseUser user = authResult.getUser();
                     if (user != null) {
-                        saveUserDataToDatabase(user.getUid(), name, email, semester, branch, user);
+                        String uid = user.getUid();
+
+                        // Save to Firestore
+                        saveToFirestore(uid, name, email, finalSemester, finalBranch);
+
+                        // Save streak to Realtime DB
+                        saveStreakToRealtimeDB(uid);
+
+                        // Auto-make admin
+                        maybeMakeAdmin(email, uid);
+
+                        // Send verification & go to login
+                        sendVerificationAndGoToLogin(user, email);
                     }
                 })
                 .addOnFailureListener(e -> {
                     showLoading(false);
-                    Toast.makeText(this, "Registration failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    toast("Registration failed: " + e.getMessage());
                 });
     }
 
+    // ADMIN CHECK
+    private boolean isAdminEmail(String email) {
+        return email.equalsIgnoreCase(ADMIN_EMAIL_1) || email.equalsIgnoreCase(ADMIN_EMAIL_2);
+    }
+
+    // VALIDATION
+    private boolean validateInputs(String name, String email, String password,
+                                   String semester, String branch, boolean isAdmin) {
+        boolean valid = true;
+
+        if (TextUtils.isEmpty(name)) {
+            nameLayout.setError("Enter name");
+            valid = false;
+        }
+        if (TextUtils.isEmpty(email) || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailLayout.setError("Valid email required");
+            valid = false;
+        }
+        if (TextUtils.isEmpty(password) || password.length() < 6) {
+            passwordLayout.setError("Min 6 characters");
+            valid = false;
+        }
+
+        if (!isAdmin) {
+            if (TextUtils.isEmpty(semester)) {
+                semesterLayout.setError("Select semester");
+                valid = false;
+            }
+            if (TextUtils.isEmpty(branch)) {
+                branchLayout.setError("Select branch");
+                valid = false;
+            }
+        }
+
+        if (!cbTerms.isChecked()) {
+            toast("Please accept Terms & Conditions");
+            valid = false;
+        }
+
+        return valid;
+    }
+
+    private void saveToFirestore(String uid, String name, String email, String semester, String branch) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("name", name);
+        data.put("email", email);
+        data.put("semester", semester);
+        data.put("branch", branch);
+        data.put("createdAt", System.currentTimeMillis());
+
+        db.collection("users").document(uid).set(data)
+                .addOnFailureListener(e -> Log.e("REG", "Firestore save failed", e));
+    }
+
+    private void saveStreakToRealtimeDB(String uid) {
+        Map<String, Object> streak = new HashMap<>();
+        streak.put("current", 0);
+        streak.put("lastActive", System.currentTimeMillis());
+
+        rtdb.child("streaks").child(uid).setValue(streak)
+                .addOnFailureListener(e -> Log.e("REG", "RTDB save failed", e));
+    }
+
+    private void maybeMakeAdmin(String email, String uid) {
+        if (isAdminEmail(email)) {
+            db.collection("admins").document(uid)
+                    .set(java.util.Collections.singletonMap("active", true))
+                    .addOnSuccessListener(aVoid -> Log.d("ADMIN", "Admin created: " + email));
+        }
+    }
+
+    private void sendVerificationAndGoToLogin(FirebaseUser user, String email) {
+        user.sendEmailVerification()
+                .addOnCompleteListener(task -> {
+                    showLoading(false);
+                    toast(task.isSuccessful()
+                            ? "Verification email sent to " + email
+                            : "Failed to send verification email");
+                    startActivity(new Intent(this, LoginActivity.class));
+                    finish();
+                });
+    }
+
+    // UI HELPERS
     private void clearErrors() {
         nameLayout.setError(null);
         emailLayout.setError(null);
@@ -163,91 +252,21 @@ public class RegisterActivity extends AppCompatActivity {
         branchLayout.setError(null);
     }
 
-    private String getTrimmedText(TextInputEditText editText) {
-        return editText.getText().toString().trim();
+    private String getTrimmedText(TextInputEditText et) {
+        return et.getText() != null ? et.getText().toString().trim() : "";
     }
 
     private String getTrimmedText(AutoCompleteTextView actv) {
-        return actv.getText().toString().trim();
+        return actv.getText() != null ? actv.getText().toString().trim() : "";
     }
 
-    private boolean validateInputs(String name, String email, String password, String semester, String branch) {
-        boolean isValid = true;
-
-        if (TextUtils.isEmpty(name)) {
-            nameLayout.setError("Please enter your full name");
-            isValid = false;
-        }
-
-        if (TextUtils.isEmpty(email)) {
-            emailLayout.setError("Please enter your email");
-            isValid = false;
-        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            emailLayout.setError("Please enter a valid email");
-            isValid = false;
-        }
-
-        if (TextUtils.isEmpty(password)) {
-            passwordLayout.setError("Please enter a password");
-            isValid = false;
-        } else if (password.length() < 6) {
-            passwordLayout.setError("Password must be at least 6 characters");
-            isValid = false;
-        }
-
-        if (TextUtils.isEmpty(semester)) {
-            semesterLayout.setError("Please select a semester");
-            isValid = false;
-        }
-
-        if (TextUtils.isEmpty(branch)) {
-            branchLayout.setError("Please select a branch");
-            isValid = false;
-        }
-
-        if (!cbTerms.isChecked()) {
-            Toast.makeText(this, "Please agree to Terms & Conditions", Toast.LENGTH_SHORT).show();
-            isValid = false;
-        }
-
-        return isValid;
+    private void showLoading(boolean show) {
+        progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+        btnRegister.setEnabled(!show);
+        btnRegister.setText(show ? "Registering..." : "Register");
     }
 
-    private void showLoading(boolean loading) {
-        progressBar.setVisibility(loading ? View.VISIBLE : View.GONE);
-        btnRegister.setEnabled(!loading);
-        btnRegister.setText(loading ? "Registering..." : "Register");
-    }
-
-    private void saveUserDataToDatabase(String userId, String name, String email, String semester, String branch, FirebaseUser firebaseUser) {
-        Map<String, Object> userData = new HashMap<>();
-        userData.put("name", name);
-        userData.put("email", email);
-        userData.put("semester", semester);
-        userData.put("branch", branch);
-        userData.put("createdAt", System.currentTimeMillis());
-
-        mDatabase.child("users").child(userId).setValue(userData)
-                .addOnSuccessListener(aVoid -> {
-                    showLoading(false);
-                    Toast.makeText(this, "Registration successful!", Toast.LENGTH_SHORT).show();
-
-                    // Send verification email
-                    firebaseUser.sendEmailVerification()
-                            .addOnSuccessListener(aVoid1 -> Toast.makeText(this,
-                                    "Verification email sent to " + email, Toast.LENGTH_LONG).show())
-                            .addOnFailureListener(e -> Toast.makeText(this,
-                                    "Failed to send verification email.", Toast.LENGTH_SHORT).show());
-
-                    // Navigate to Login
-                    Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                    finish();
-                })
-                .addOnFailureListener(e -> {
-                    showLoading(false);
-                    Toast.makeText(this, "Failed to save data: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                });
+    private void toast(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
     }
 }

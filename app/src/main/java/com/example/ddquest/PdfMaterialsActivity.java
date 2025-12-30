@@ -114,7 +114,7 @@ public class PdfMaterialsActivity extends AppCompatActivity {
         }
 
         String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-        String localFileName = title.replace(" ", "_") + "_" + timestamp + ".pdf";
+        String localFileName = title.replace(" ", "") + "" + timestamp + ".pdf";
         File file = new File(dir, localFileName);
 
         FileDownloadTask downloadTask = ref.getFile(file);

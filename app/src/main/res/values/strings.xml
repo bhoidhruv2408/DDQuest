@@ -4,4 +4,5 @@
     <string name="back_button_desc">Back to previous screen</string>
     <string name="default_web_client_id">\nweb\n</string>
     <string name="all_important_formulas_shortcuts"><![CDATA[All important formulas & shortcuts]]></string>
+    <string name="fab_text">Refresh</string>
 </resources>

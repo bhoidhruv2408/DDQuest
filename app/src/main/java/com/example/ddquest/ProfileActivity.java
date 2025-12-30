@@ -6,10 +6,9 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,25 +17,18 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
-import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -51,13 +43,13 @@ public class ProfileActivity extends AppCompatActivity {
     private View cardEditMode;
 
     private FirebaseAuth mAuth;
-    private DatabaseReference mDatabase;
+    private FirebaseFirestore db;
     private FirebaseUser currentUser;
     private String userId;
-
+    private String currentPhotoBase64;
     private Uri photoUri;
     private boolean isEditMode = false;
-    private String currentPhotoBase64 = null;
+    private boolean isAdmin = false;
 
     private final ActivityResultLauncher<Intent> pickImageLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
@@ -75,17 +67,17 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
 
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
         currentUser = mAuth.getCurrentUser();
         if (currentUser == null) {
             navigateToLogin();
             return;
         }
         userId = currentUser.getUid();
-        mDatabase = FirebaseDatabase.getInstance().getReference("users").child(userId);
 
         initViews();
         setupToolbar();
-        loadUserProfile();
+        checkAdminAndLoadProfile();
         setupEditMode();
     }
 
@@ -115,49 +107,60 @@ public class ProfileActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> finish());
     }
 
-    private void loadUserProfile() {
-        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if (!snapshot.exists()) {
-                    setInitialsAvatar("??");
-                    return;
-                }
-
-                String name = getString(snapshot, "name");
-                String email = getString(snapshot, "email");
-                String semester = getString(snapshot, "semester");
-                String branch = getString(snapshot, "branch");
-                currentPhotoBase64 = getString(snapshot, "photoBase64");
-
-                etName.setText(name);
-                etEmail.setText(email);
-                etSemester.setText(semester);
-                etBranch.setText(branch);
-
-                tvUserName.setText(name);
-                tvUserEmail.setText(email);
-
-                if (!TextUtils.isEmpty(currentPhotoBase64)) {
-                    loadBase64Image(currentPhotoBase64);
-                } else if (!TextUtils.isEmpty(name)) {
-                    setInitialsAvatar(name);
-                } else {
-                    setInitialsAvatar("??");
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                toast("Failed to load profile");
-                setInitialsAvatar("??");
-            }
-        });
+    private void checkAdminAndLoadProfile() {
+        db.collection("admins").document(userId).get()
+                .addOnSuccessListener(adminSnap -> {
+                    isAdmin = adminSnap.exists();
+                    loadUserProfile();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("PROFILE", "Admin check failed", e);
+                    loadUserProfile();
+                });
     }
 
-    private String getString(DataSnapshot snapshot, String key) {
-        Object value = snapshot.child(key).getValue();
-        return value != null ? value.toString() : "";
+    private void loadUserProfile() {
+        db.collection("users").document(userId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (!documentSnapshot.exists()) {
+                        setInitialsAvatar("??");
+                        return;
+                    }
+
+                    String name = documentSnapshot.getString("name");
+                    String email = documentSnapshot.getString("email");
+                    String semester = documentSnapshot.getString("semester");
+                    String branch = documentSnapshot.getString("branch");
+                    currentPhotoBase64 = documentSnapshot.getString("photoBase64");
+
+                    etName.setText(name);
+                    etEmail.setText(email);
+                    etSemester.setText(semester);
+                    etBranch.setText(branch);
+
+                    tvUserName.setText(name);
+                    tvUserEmail.setText(email);
+
+                    // Admin: show "Admin" and disable edit
+                    if (isAdmin) {
+                        etSemester.setText("Admin");
+                        etBranch.setText("Admin");
+                        etSemester.setEnabled(false);
+                        etBranch.setEnabled(false);
+                    }
+
+                    if (!TextUtils.isEmpty(currentPhotoBase64)) {
+                        loadBase64Image(currentPhotoBase64);
+                    } else if (!TextUtils.isEmpty(name)) {
+                        setInitialsAvatar(name);
+                    } else {
+                        setInitialsAvatar("??");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    toast("Failed to load profile");
+                    setInitialsAvatar("??");
+                });
     }
 
     private void loadBase64Image(String base64) {
@@ -166,36 +169,22 @@ public class ProfileActivity extends AppCompatActivity {
             Bitmap bitmap = BitmapFactory.decodeByteArray(decoded, 0, decoded.length);
             ivProfile.setImageBitmap(bitmap);
         } catch (Exception e) {
-            setInitialsAvatar(getStringFromEditText(etName));
+            setInitialsAvatar(etName.getText().toString());
         }
     }
 
     private void setInitialsAvatar(String fullName) {
-        if (TextUtils.isEmpty(fullName)) fullName = "??";
-        String[] parts = fullName.trim().split("\\s+");
-        StringBuilder initials = new StringBuilder();
-        if (parts.length >= 2) {
-            initials.append(Character.toUpperCase(parts[0].charAt(0)));
-            initials.append(Character.toUpperCase(parts[parts.length - 1].charAt(0)));
-        } else if (parts.length == 1 && parts[0].length() >= 1) {
-            initials.append(Character.toUpperCase(parts[0].charAt(0)));
-            if (parts[0].length() > 1) initials.append(Character.toUpperCase(parts[0].charAt(1)));
-        } else {
-            initials.append("??");
-        }
-        ivProfile.setImageDrawable(new InitialsAvatarDrawable(
-                initials.toString(),
-                ContextCompat.getColor(this, R.color.primary_color)
-        ));
+        ivProfile.setImageDrawable(new InitialsAvatarDrawable(fullName, getColor(R.color.primary_color)));
     }
 
     private void loadProfileImage(Uri uri) {
-        Glide.with(this)
-                .load(uri)
-                .placeholder(R.drawable.ic_person_large)
-                .error(R.drawable.ic_person_large)
-                .circleCrop()
-                .into(ivProfile);
+        try {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+            bitmap = Bitmap.createScaledBitmap(bitmap, 200, 200, true);
+            ivProfile.setImageBitmap(bitmap);
+        } catch (IOException e) {
+            toast("Failed to load image");
+        }
     }
 
     private void setupEditMode() {
@@ -204,12 +193,6 @@ public class ProfileActivity extends AppCompatActivity {
         btnSave.setOnClickListener(v -> saveProfile());
         btnLogout.setOnClickListener(v -> logout());
         ivCameraIcon.setOnClickListener(v -> openImagePicker());
-
-        // Clear errors on text change
-        etName.addTextChangedListener(new ErrorClearWatcher(nameLayout));
-        etEmail.addTextChangedListener(new ErrorClearWatcher(emailLayout));
-        etSemester.addTextChangedListener(new ErrorClearWatcher(semesterLayout));
-        etBranch.addTextChangedListener(new ErrorClearWatcher(branchLayout));
     }
 
     private void openImagePicker() {
@@ -224,10 +207,10 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void setEditMode(boolean enable) {
-        etName.setEnabled(enable);
-        etEmail.setEnabled(enable);
-        etSemester.setEnabled(enable);
-        etBranch.setEnabled(enable);
+        etName.setEnabled(enable && !isAdmin);
+        etEmail.setEnabled(enable && !isAdmin);
+        etSemester.setEnabled(enable && !isAdmin);
+        etBranch.setEnabled(enable && !isAdmin);
 
         btnEdit.setVisibility(enable ? View.GONE : View.VISIBLE);
         btnSave.setVisibility(enable ? View.VISIBLE : View.GONE);
@@ -240,49 +223,23 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void saveProfile() {
-        String name = getStringFromEditText(etName).trim();
-        String email = getStringFromEditText(etEmail).trim();
-        String semester = getStringFromEditText(etSemester).trim();
-        String branch = getStringFromEditText(etBranch).trim();
-
-        if (!validateInputs(name, email, semester, branch)) return;
+        String name = etName.getText().toString().trim();
+        if (TextUtils.isEmpty(name)) {
+            nameLayout.setError("Required");
+            return;
+        }
 
         btnSave.setEnabled(false);
         btnSave.setText("Saving...");
 
-        // Update Firebase Auth Email
-        currentUser.updateEmail(email)
-                .addOnSuccessListener(aVoid -> {
-                    // Save to Realtime DB
-                    saveToRealtimeDB(name, email, semester, branch);
-                })
-                .addOnFailureListener(e -> {
-                    emailLayout.setError("Failed to update email. Re-login required.");
-                    btnSave.setEnabled(true);
-                    btnSave.setText("Save Changes");
-                });
-    }
-
-    private void saveToRealtimeDB(String name, String email, String semester, String branch) {
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("name", name);
-        updates.put("email", email);
-        updates.put("semester", semester);
-        updates.put("branch", branch);
-
-        // Handle photo
         if (photoUri != null) {
-            compressAndSavePhoto(updates, name);
+            compressAndSavePhoto(name);
         } else {
-            // Keep current photo or remove
-            if (currentPhotoBase64 != null) {
-                updates.put("photoBase64", currentPhotoBase64);
-            }
-            saveUpdates(updates, name);
+            saveNameOnly(name);
         }
     }
 
-    private void compressAndSavePhoto(Map<String, Object> updates, String name) {
+    private void compressAndSavePhoto(String name) {
         new Thread(() -> {
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), photoUri);
@@ -290,45 +247,42 @@ public class ProfileActivity extends AppCompatActivity {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos);
                 String base64 = Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
-                updates.put("photoBase64", base64);
 
-                runOnUiThread(() -> saveUpdates(updates, name));
+                runOnUiThread(() -> saveToFirestore(name, base64));
             } catch (IOException e) {
                 runOnUiThread(() -> {
-                    toast("Image processing failed");
+                    toast("Image failed");
                     btnSave.setEnabled(true);
-                    btnSave.setText("Save Changes");
+                    btnSave.setText("Save");
                 });
             }
         }).start();
     }
 
-    private void saveUpdates(Map<String, Object> updates, String name) {
-        mDatabase.updateChildren(updates)
+    private void saveNameOnly(String name) {
+        saveToFirestore(name, null);
+    }
+
+    private void saveToFirestore(String name, String newPhotoBase64) {
+        db.collection("users").document(userId)
+                .update("name", name, "photoBase64", newPhotoBase64 != null ? newPhotoBase64 : currentPhotoBase64)
                 .addOnSuccessListener(aVoid -> {
                     toast("Profile updated!");
                     tvUserName.setText(name);
-                    tvUserEmail.setText(updates.get("email").toString());
                     setEditMode(false);
-                    btnSave.setText("Save Changes");
+                    btnSave.setText("Save");
                     btnSave.setEnabled(true);
                     photoUri = null;
-                    currentPhotoBase64 = (String) updates.get("photoBase64");
+                    if (newPhotoBase64 != null) {
+                        currentPhotoBase64 = newPhotoBase64;
+                        loadBase64Image(newPhotoBase64);
+                    }
                 })
                 .addOnFailureListener(e -> {
                     toast("Save failed");
                     btnSave.setEnabled(true);
-                    btnSave.setText("Save Changes");
+                    btnSave.setText("Save");
                 });
-    }
-
-    private boolean validateInputs(String name, String email, String semester, String branch) {
-        boolean valid = true;
-        if (name.isEmpty()) { nameLayout.setError("Required"); valid = false; }
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) { emailLayout.setError("Invalid email"); valid = false; }
-        if (semester.isEmpty()) { semesterLayout.setError("Required"); valid = false; }
-        if (branch.isEmpty()) { branchLayout.setError("Required"); valid = false; }
-        return valid;
     }
 
     private void logout() {
@@ -343,20 +297,7 @@ public class ProfileActivity extends AppCompatActivity {
         finish();
     }
 
-    private String getStringFromEditText(TextInputEditText editText) {
-        return editText.getText() != null ? editText.getText().toString() : "";
-    }
-
     private void toast(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-    }
-
-    // Clear error on typing
-    private static class ErrorClearWatcher implements TextWatcher {
-        private final TextInputLayout layout;
-        ErrorClearWatcher(TextInputLayout layout) { this.layout = layout; }
-        @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-        @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
-        @Override public void afterTextChanged(Editable s) { layout.setError(null); }
     }
 }

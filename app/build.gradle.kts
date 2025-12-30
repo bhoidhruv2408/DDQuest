@@ -67,6 +67,9 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore:24.9.1")
     implementation("com.google.android.gms:play-services-auth:21.2.0")
     implementation("com.airbnb.android:lottie:6.1.0")
+    implementation("com.google.android.exoplayer:exoplayer-core:2.19.1")
+    implementation("com.google.android.exoplayer:exoplayer-ui:2.19.1")
+    implementation("com.airbnb.android:lottie:6.5.2")
 
 
 
